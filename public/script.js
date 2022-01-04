@@ -1,8 +1,71 @@
 const socket = io ('/')
+const videoGrid = document.getElementById('video-grid');
 
-socket.emit('join-room', ROOM_ID, 10) //sends join-room to server side socket.io
-
-socket.on('user-connected', (roomId, socketCount) => {
-    console.log("Another user connected to Room ID " +  roomId)
-    console.log("Currently connected " + socketCount + 'users')
+//on this object we listen if someone try to call us
+const myPeer = new Peer(undefined, {
+    host: '/',
+    port: '3001'
 })
+
+const myVideo = document.createElement('video')
+//we mute our video, so we do not get echo effect
+myVideo.muted = true
+const peers = { }
+//WebRTC API call to get local camera view
+navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: true
+}).then (stream => {
+    a = document.createElement('div')
+    addVideoStream(myVideo, stream)
+
+    myPeer.on('call', call => {
+        call.answer(stream)
+        const video = document.createElement('video')
+        call.on('stream', userVideoStream => {
+            addVideoStream(video, userVideoStream)
+        })
+    })
+
+    //we need to allow ourselfs to connect to other users
+    //when server response "user-connected is received"
+    socket.on('user-connected', (userId) => {
+        setTimeout(connectToNewUser,1000,userId,stream)
+    })
+})
+
+socket.on('user-disconnected', userId => {
+    console.log(userId)
+    peers[userId].close()
+})
+
+//on open peer, emit to server "join-room" //   id is automaticlly generated
+myPeer.on('open', id => {
+    socket.emit('join-room', ROOM_ID, id)
+})
+
+function connectToNewUser(userId, stream){
+    //call function - calls user with current ID
+    const call = myPeer.call(userId, stream)
+    const video = document.createElement('video')
+    //when other users call us back, we get event 'stream'
+    call.on('stream', userVideoStream => {
+        addVideoStream(video, userVideoStream)
+        console.log("Call received")
+    })
+    call.on('close', () => {
+        video.remove()
+    })
+
+    peers[userId] = call
+}
+
+//adding local video stream to webpage (selfview)
+function addVideoStream(video, stream) {
+    video.srcObject = stream
+    video.addEventListener('loadedmetadata', () => {
+        video.play()
+        console.log("predvajaj")
+    })
+    videoGrid.append(video)
+}
