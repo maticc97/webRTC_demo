@@ -21,7 +21,7 @@ io.on('connection', socket => {
         socket.join(roomId) //current socket join a room
         console.log("   ")
         socketCount = io.of('/').sockets.size;
-        console.log(socketCount)
+        console.log("Trenutno je odprtih " + socketCount + " povezav")
         socket.broadcast.to(roomId).emit('user-connected', roomId, socketCount) //send massage to a room - BCAST (bomo poslali video)
  
         
