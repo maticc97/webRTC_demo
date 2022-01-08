@@ -18,11 +18,8 @@ app.get('/:room',(req,res) => {
 
 io.on('connection', socket => {
     socket.on('join-room', (roomId, userId) => { //client-side pošlje join-room
-        console.log("Povezavo je vzpostavil Peer ID: " + userId)
+        console.log("Novo povezavo je vzpostavil Peer ID: " + userId +" želi v sobo z ID: " + roomId)
         socket.join(roomId) //current socket join a room
-        console.log(userId + "se pridružuje sobi " + roomId + "\n")
-        
-        var room_clients = io.of("/").adapter.sids;
 
         console.log("Obvestilo o novem članu poslano WebSocketom: \n",  io.of("/").adapter.sids)
 
