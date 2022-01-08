@@ -18,7 +18,14 @@ app.get('/:room',(req,res) => {
 
 io.on('connection', socket => {
     socket.on('join-room', (roomId, userId) => { //client-side pošlje join-room
+        console.log("Povezavo je vzpostavil Peer ID: " + userId)
         socket.join(roomId) //current socket join a room
+        console.log(userId + "se pridružuje sobi " + roomId + "\n")
+        
+        var room_clients = io.of("/").adapter.sids;
+
+        console.log("Obvestilo o novem članu poslano WebSocketom: \n",  io.of("/").adapter.sids)
+
         socket.broadcast.to(roomId).emit('user-connected', userId) //send massage to a room - BCAST (bomo poslali video)        
         socket.on('disconnect', () => {
             socket.broadcast.to(roomId).emit('user-disconnected', userId)

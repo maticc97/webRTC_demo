@@ -1,7 +1,6 @@
 const socket = io ('/')
 const videoGrid = document.getElementById('video-grid');
 
-//on this object we listen if someone try to call us
 const myPeer = new Peer(undefined, {
     host: '/',
     port: '3001'
@@ -41,6 +40,7 @@ socket.on('user-disconnected', userId => {
 
 //on open peer, emit to server "join-room" //   id is automaticlly generated
 myPeer.on('open', id => {
+    console.log("V sobo " + ROOM_ID + " se povezuje PEER z ID: " + id +"/n" )
     socket.emit('join-room', ROOM_ID, id)
 })
 
