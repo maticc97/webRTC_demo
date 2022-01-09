@@ -23,7 +23,7 @@ io.on('connection', socket => {
 
         console.log("Obvestilo o novem članu poslano WebSocketom: \n",  io.of("/").adapter.sids)
 
-        socket.broadcast.to(roomId).emit('user-connected', userId) //send massage to a room - BCAST (bomo poslali video)        
+        socket.broadcast.to(roomId).emit('user-connected', userId) //send massage to a room members       
         socket.on('disconnect', () => {
             socket.broadcast.to(roomId).emit('user-disconnected', userId)
         })

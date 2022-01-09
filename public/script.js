@@ -2,7 +2,7 @@ const socket = io ('/')
 const videoGrid = document.getElementById('video-grid');
 
 const myPeer = new Peer(undefined, {
-    host: '/',
+    host: '88.200.109.78',
     port: '3001'
 })
 
@@ -35,6 +35,7 @@ navigator.mediaDevices.getUserMedia({
 })
 
 socket.on('user-disconnected', userId => {
+    console.log("Prenehaj pošiljati uporabniku " + userId)
     peers[userId].close()
 })
 
